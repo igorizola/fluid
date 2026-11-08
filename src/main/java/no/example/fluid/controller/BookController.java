@@ -1,7 +1,10 @@
 package no.example.fluid.controller;
 
+import jakarta.validation.Valid;
 import no.example.fluid.entity.Book;
+import no.example.fluid.service.BookNotFoundException;
 import no.example.fluid.service.BookService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,17 +35,17 @@ public class BookController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Book> createBook(@RequestBody Book book) {
+	public ResponseEntity<Book> createBook(@Valid @RequestBody Book book) {
 		Book savedBook = bookService.createBook(book);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
+	public ResponseEntity<Book> updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
 		try {
 			Book updatedBook = bookService.updateBook(id, bookDetails);
 			return ResponseEntity.ok(updatedBook);
-		} catch (RuntimeException e) {
+		} catch (BookNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
 	}
@@ -52,8 +55,13 @@ public class BookController {
 		try {
 			bookService.deleteBook(id);
 			return ResponseEntity.noContent().build();
-		} catch (RuntimeException e) {
+		} catch (BookNotFoundException e) {
 			return ResponseEntity.notFound().build();
 		}
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<Void> handleDataIntegrityViolation() {
+		return ResponseEntity.status(HttpStatus.CONFLICT).build();
 	}
 }

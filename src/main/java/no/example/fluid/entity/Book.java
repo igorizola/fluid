@@ -1,21 +1,24 @@
 package no.example.fluid.entity;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("books")
+@Table("BOOKS")
 public class Book {
 
 	@Id
 	private Long id;
 	
+	@NotBlank
 	private String title;
+	@NotBlank
 	private String author;
 	private String isbn;
 	private Double price;
 	
-	@Column("year_published")
+	@Column("YEAR_PUBLISHED")
 	private Integer year;
 
 	public Book() {
@@ -89,4 +92,3 @@ public class Book {
 				'}';
 	}
 }
-

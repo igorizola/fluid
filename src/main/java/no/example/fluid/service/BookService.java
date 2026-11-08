@@ -24,6 +24,7 @@ public class BookService {
 	}
 
 	public Book createBook(Book book) {
+		book.setId(null);
 		return bookRepository.save(book);
 	}
 
@@ -37,12 +38,12 @@ public class BookService {
 					book.setYear(bookDetails.getYear());
 					return bookRepository.save(book);
 				})
-				.orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+				.orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 	}
 
 	public void deleteBook(Long id) {
 		if (!bookRepository.existsById(id)) {
-			throw new RuntimeException("Book not found with id: " + id);
+			throw new BookNotFoundException("Book not found with id: " + id);
 		}
 		bookRepository.deleteById(id);
 	}
